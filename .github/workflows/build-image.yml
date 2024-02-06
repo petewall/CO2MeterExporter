@@ -38,6 +38,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/petewall/co2meter-exporter
+          tags: |
+            type=raw,value=latest
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
