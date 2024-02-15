@@ -11,4 +11,4 @@ push-image:
 	docker push ghcr.io/petewall/co2meter-exporter
 
 run:
-	pipenv run uvicorn  main:app --reload
+	pipenv run uvicorn --port 9800 main:app --reload

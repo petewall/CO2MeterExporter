@@ -14,4 +14,4 @@ COPY main.py ./
 
 EXPOSE 9800
 
-CMD ["uvicorn", "--port", "9800", "main:app"]
+CMD ["uvicorn", "--host", "0.0.0.0", "--port", "9800", "main:app"]
