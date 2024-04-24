@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+co2meter = "*"
 fastapi = "*"
 uvicorn = "*"
 prometheus-client = "*"
