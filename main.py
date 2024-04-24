@@ -12,7 +12,7 @@ from fastapi.responses import PlainTextResponse, RedirectResponse
 import co2meter as co2
 
 # Environment
-BYPASS_DECRYPT = bool(os.environ['BYPASS_DECRYPT'])
+BYPASS_DECRYPT = bool(os.getenv('BYPASS_DECRYPT'))
 
 # Metrics
 co2_gauge = Gauge('co2meter_co2_ppm', 'CO2 measurement, in parts per million')
