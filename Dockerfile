@@ -1,4 +1,4 @@
-FROM arm64v8/python:3.13.7-slim
+FROM arm64v8/python:3.14.0-slim
 
 COPY Pipfile Pipfile.lock ./
 
