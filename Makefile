@@ -1,8 +1,9 @@
-
 ALL_PYTHON_SOURCES := $(shell find $$PWD -name '*.py')
-
 lint: $(ALL_PYTHON_SOURCES)
 	pipenv run pylint $(ALL_PYTHON_SOURCES)
+
+Pipfile.lock: Pipfile
+	pipenv lock
 
 build-image:
 	docker build -t ghcr.io/petewall/co2meter-exporter .
