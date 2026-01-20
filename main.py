@@ -18,14 +18,21 @@ MONITORING_INTERVAL = int(os.getenv('MONITORING_INTERVAL', default='60'))
 # Metrics
 co2_gauge = Gauge('co2meter_co2_ppm', 'CO2 measurement, in parts per million')
 temperature_gauge = Gauge('co2meter_temperature_c', 'Temperature, in degrees celcius')
-read_time = Summary('co2meter_request_processing_seconds', 'Time spent reading data from the meter')
+sensor_info = Gauge('co2meter_sensor_info', 'Information about the CO2 Sensor')
 
 # Modules
 app = FastAPI()
 monitor = co2.CO2monitor(bypass_decrypt=BYPASS_DECRYPT)
 monitor.start_monitoring(interval=MONITORING_INTERVAL)
 
-@read_time.time()
+# Set up info metric
+monitor.info
+sensor_info.labels(
+    'manufacturer', monitor.info['manufacturer'],
+    'product_name', monitor.info['product_name'],
+    'serial_no', monitor.info['serial_no'],
+).set(1)
+
 def read_data():
     """
     Reads the data from the CO2 Monitor
