@@ -13,6 +13,7 @@ import co2meter as co2
 
 # Environment
 BYPASS_DECRYPT = bool(os.getenv('BYPASS_DECRYPT'))
+MONITORING_INTERVAL = int(os.getenv('MONITORING_INTERVAL', default='60'))
 
 # Metrics
 co2_gauge = Gauge('co2meter_co2_ppm', 'CO2 measurement, in parts per million')
@@ -22,6 +23,7 @@ read_time = Summary('co2meter_request_processing_seconds', 'Time spent reading d
 # Modules
 app = FastAPI()
 monitor = co2.CO2monitor(bypass_decrypt=BYPASS_DECRYPT)
+monitor.start_monitoring(interval=MONITORING_INTERVAL)
 
 @read_time.time()
 def read_data():
