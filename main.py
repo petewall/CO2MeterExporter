@@ -6,7 +6,8 @@ Prometheus-style metrics.
 """
 
 import os
-from prometheus_client import Gauge, Summary, generate_latest
+import signal
+from prometheus_client import Gauge, generate_latest
 from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse, RedirectResponse
 import co2meter as co2
@@ -25,12 +26,20 @@ app = FastAPI()
 monitor = co2.CO2monitor(bypass_decrypt=BYPASS_DECRYPT)
 monitor.start_monitoring(interval=MONITORING_INTERVAL)
 
+def _handle_ctrl_c(_signum, _frame):
+    """
+    Ensure the monitoring loop is stopped before exiting.
+    """
+    monitor.stop_monitoring()
+    raise KeyboardInterrupt
+
+signal.signal(signal.SIGINT, _handle_ctrl_c)
+
 # Set up info metric
-monitor.info
 sensor_info.labels(
-    'manufacturer', monitor.info['manufacturer'],
-    'product_name', monitor.info['product_name'],
-    'serial_no', monitor.info['serial_no'],
+    manufacturer=monitor.info['manufacturer'],
+    product_name=monitor.info['product_name'],
+    serial_no=monitor.info['serial_no'],
 ).set(1)
 
 def read_data():
