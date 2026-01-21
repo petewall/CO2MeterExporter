@@ -25,7 +25,11 @@ app = FastAPI()
 monitor = co2.CO2monitor(bypass_decrypt=BYPASS_DECRYPT)
 
 # Set up info metric
-sensor_info = Gauge('co2meter_sensor_info', 'Information about the CO2 Sensor').labels(
+sensor_info = Gauge(
+    name='co2meter_sensor_info',
+    documentation='Information about the CO2 Sensor',
+    labelnames=['manufacturer', 'product_name', 'serial_no']
+).labels(
     manufacturer=monitor.info['manufacturer'],
     product_name=monitor.info['product_name'],
     serial_no=monitor.info['serial_no'],
