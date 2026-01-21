@@ -19,13 +19,20 @@ MONITORING_INTERVAL = int(os.getenv('MONITORING_INTERVAL', default='60'))
 # Metrics
 co2_gauge = Gauge('co2meter_co2_ppm', 'CO2 measurement, in parts per million')
 temperature_gauge = Gauge('co2meter_temperature_c', 'Temperature, in degrees celcius')
-sensor_info = Gauge('co2meter_sensor_info', 'Information about the CO2 Sensor')
 
 # Modules
 app = FastAPI()
 monitor = co2.CO2monitor(bypass_decrypt=BYPASS_DECRYPT)
-monitor.start_monitoring(interval=MONITORING_INTERVAL)
 
+# Set up info metric
+sensor_info = Gauge('co2meter_sensor_info', 'Information about the CO2 Sensor').labels(
+    manufacturer=monitor.info['manufacturer'],
+    product_name=monitor.info['product_name'],
+    serial_no=monitor.info['serial_no'],
+).set(1)
+
+# Start the monitor
+monitor.start_monitoring(interval=MONITORING_INTERVAL)
 def _handle_ctrl_c(_signum, _frame):
     """
     Ensure the monitoring loop is stopped before exiting.
@@ -34,13 +41,6 @@ def _handle_ctrl_c(_signum, _frame):
     raise KeyboardInterrupt
 
 signal.signal(signal.SIGINT, _handle_ctrl_c)
-
-# Set up info metric
-sensor_info.labels(
-    manufacturer=monitor.info['manufacturer'],
-    product_name=monitor.info['product_name'],
-    serial_no=monitor.info['serial_no'],
-).set(1)
 
 def read_data():
     """
