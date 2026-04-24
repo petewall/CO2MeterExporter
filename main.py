@@ -36,6 +36,7 @@ sensor_info = Gauge(
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
+    """Start and stop the CO2 monitor with the app lifecycle."""
     monitor.start_monitoring(interval=MONITORING_INTERVAL)
     yield
     monitor.stop_monitoring()
@@ -43,6 +44,7 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 def read_data():
+    """Read CO2 and temperature from the monitor and update gauges."""
     _, current_co2, current_temperature = monitor.read_data()
     co2_gauge.set(current_co2)
     temperature_gauge.set(current_temperature)
@@ -50,6 +52,7 @@ def read_data():
 
 @app.get("/")
 def get_root():
+    """Render a live dashboard showing current CO2 and temperature readings."""
     co2_ppm, temp_c = read_data()
     return HTMLResponse(content=f"""<!DOCTYPE html>
 <html lang="en">

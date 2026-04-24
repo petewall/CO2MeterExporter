@@ -11,3 +11,5 @@ prometheus-client = "*"
 
 [dev-packages]
 pylint = "*"
+pytest = "*"
+httpx = "*"
