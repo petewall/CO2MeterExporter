@@ -1,6 +1,12 @@
 ##@ Dependencies
-Pipfile.lock: Pipfile
+Pipfile.lock: Pipfile ## Lock the lockfile
 	pipenv lock
+
+deps: Pipfile.lock
+	@PIPENV_VERBOSITY=-1 pipenv install
+
+dev-deps: Pipfile.lock
+	@PIPENV_VERBOSITY=-1 pipenv install --dev
 
 ##@ Image management
 build-image: ## Build the container image
@@ -11,17 +17,17 @@ push-image: ## Push the container image
 
 ##@ Running
 
-run: ## Run locally, supports hot reloading
-	BYPASS_DECRYPT=true pipenv run uvicorn --port 9800 main:app --reload
+run: deps ## Run locally with hardware attached
+	PIPENV_VERBOSITY=-1 pipenv run uvicorn --port 9800 main:app --reload
 
 ##@ Test
 
 ALL_PYTHON_SOURCES := $(shell find $$PWD -name '*.py')
-lint: $(ALL_PYTHON_SOURCES) ## Lint the Python sources
-	pipenv run pylint $(ALL_PYTHON_SOURCES)
+lint: dev-deps $(ALL_PYTHON_SOURCES) ## Lint the Python sources
+	PIPENV_VERBOSITY=-1 pipenv run pylint $(ALL_PYTHON_SOURCES)
 
-test: $(ALL_PYTHON_SOURCES) ## Run tests
-	pipenv run pytest tests/ -v
+test: dev-deps $(ALL_PYTHON_SOURCES) ## Run tests
+	PIPENV_VERBOSITY=-1 pipenv run pytest tests/ -v
 
 
 ##@ General
