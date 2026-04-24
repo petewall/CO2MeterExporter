@@ -15,6 +15,6 @@ COPY main.py ./
 EXPOSE 9800
 
 ENV MONITORING_INTERVAL=60
-ENV BYPASS_DECRYPT=false
+ENV BYPASS_DECRYPT=true
 
 CMD ["uvicorn", "--host", "0.0.0.0", "--port", "9800", "main:app"]
