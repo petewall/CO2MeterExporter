@@ -45,15 +45,22 @@ app = FastAPI(lifespan=lifespan)
 
 def read_data():
     """Read CO2 and temperature from the monitor and update gauges."""
-    _, current_co2, current_temperature = monitor.read_data()
+    global _data_available
+    try:
+        _, current_co2, current_temperature = monitor.read_data()
+    except IndexError:
+        return None, None
     co2_gauge.set(current_co2)
     temperature_gauge.set(current_temperature)
+    _data_available = True
     return current_co2, current_temperature
 
 @app.get("/")
 def get_root():
     """Render a live dashboard showing current CO2 and temperature readings."""
     co2_ppm, temp_c = read_data()
+    co2_str = str(co2_ppm) if co2_ppm is not None else "—"
+    temp_str = f"{temp_c:.1f}" if temp_c is not None else "—"
     return HTMLResponse(content=f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -76,11 +83,11 @@ def get_root():
   <h1>CO2 Meter</h1>
   <div class="readings">
     <div class="card">
-      <div class="value">{co2_ppm}</div>
+      <div class="value">{co2_str}</div>
       <div class="label">CO2 (ppm)</div>
     </div>
     <div class="card">
-      <div class="value">{temp_c:.1f}</div>
+      <div class="value">{temp_str}</div>
       <div class="label">Temperature (°C)</div>
     </div>
   </div>
