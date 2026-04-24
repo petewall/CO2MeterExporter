@@ -45,14 +45,12 @@ app = FastAPI(lifespan=lifespan)
 
 def read_data():
     """Read CO2 and temperature from the monitor and update gauges."""
-    global _data_available
     try:
         _, current_co2, current_temperature = monitor.read_data()
     except IndexError:
         return None, None
     co2_gauge.set(current_co2)
     temperature_gauge.set(current_temperature)
-    _data_available = True
     return current_co2, current_temperature
 
 @app.get("/")
