@@ -18,6 +18,9 @@ push-image: ## Push the container image
 ##@ Running
 
 run: deps ## Run locally with hardware attached
+	PIPENV_VERBOSITY=-1 BYPASS_DECRYPT=true pipenv run uvicorn --port 9800 main:app
+
+run-reload: deps ## Run locally with hardware attached, reloads automatically
 	PIPENV_VERBOSITY=-1 BYPASS_DECRYPT=true pipenv run uvicorn --port 9800 main:app --reload
 
 ##@ Test
